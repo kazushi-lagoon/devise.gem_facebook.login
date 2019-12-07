@@ -1,6 +1,11 @@
 source 'https://rubygems.org'
 
 gem 'rails',        '5.1.6'
+gem 'bootstrap-sass', '3.3.7'
+# gem 'bootstrap-sass', '3.3.7'　このgemで、bootstrapの公式からダウンロードする必要はない。ただしこれは使える状態にしただけなので、importする必要がある。
+# gemを書き換える前の環境でサーバーが立ち上がったままになっているため、新しくgemを書き換えた場合、rails serverを立ち上げ直す必要がある。
+# configや開発環境を書き換えた場合も同様で、サーバーを立ち上げた時に一回読み込んでそれを使いまわしているため、rails serverを立ち上げ直す必要がある。
+# MVCは、毎回毎回ブラウザで呼び出す時に読み込み直しているので、サーバーを立ち上げ直す必要はない。
 gem 'puma',         '3.9.1'
 gem 'sass-rails',   '5.0.6'
 gem 'uglifier',     '3.2.0'

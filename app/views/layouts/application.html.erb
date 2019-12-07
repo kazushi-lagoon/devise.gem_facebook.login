@@ -3,12 +3,20 @@
   <head>
     <title><%= full_title(yield(:title)) %></title>
     <%= csrf_meta_tags %>
-
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag    'application', media: 'all',
+                               'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application',
+                               'data-turbolinks-track': 'reload' %>
+    <%= render 'layouts/shim' %>
+    
   </head>
-
   <body>
-    <%= yield %>
+    <%= render 'layouts/header' %>
+    <!--render　の引数では、app/views以下のファイルを読み込むことになる。なので、上のコードでは、app/views/layouts/shim.html.erb　となる。-->
+    <!--また、パーシャルのファイルは明示的であるようにrailsでパターン化されていて、アンダーバーから始めないとエラーが起こる。(_shim.html.erb)-->
+    <div class="container">
+      <%= yield %>
+    </div>
+    <%= render 'layouts/footer' %>
   </body>
 </html>

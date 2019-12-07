@@ -1,0 +1,17 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+      <div class="container">
+        <%= link_to "sample app", root_path, id: "logo" %>
+        <!--<a href='#', id="logo">sample app</a>-->
+        <!--aタグでも書けるが、#のところがstatic_pages_urlになると、rubyの文法なので、link_toメソッドである必要がある。erbの内部だと、変数やメソッドを入れる
+        ことができる。id: "logo"の部分は、オプション引数といって、メソッドに好きなだけハッシュをバンバンバンバン渡すことができる。
+        -->
+        
+        <nav>
+          <ul class="nav navbar-nav navbar-right">
+            <li><%= link_to "Home",   root_path %></li>
+            <li><%= link_to "Help",   help_path %></li>
+            <li><%= link_to "Log in", '#' %></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
