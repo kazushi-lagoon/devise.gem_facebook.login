@@ -1,3 +1,36 @@
 <% provide(:title, 'Sign up') %>
 <h1>Sign up</h1>
-<p>This will be a signup page for new users.</p>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@user) do |f| %>
+    <!--フォーム（ユーザーが情報を入力する）は、Webサービスでは当たり前に使われるもので、当たり前に使われるものはレールがひかれていて、rails のhelperメソッド-->
+    <!--として、form_forがあらかじめ用意されている。-->
+    <!--form_forの引数に@userのように、ユーザーの情報を渡すと、その情報を作成するために必要なフォームが簡単に作成できるような仕様になっている。-->
+    <!--paramsのデータ構造は、ハッシュの中にハッシュが入れ子構造で入っている。{user: {name:...,email:...,...}}-->
+    <!-- htmlでは、<form action="/users",method="post",...></form>となっている。これは、form_forの引数にUser.newで新しく生成されたUserモデルのインスタンス
+    が入っているため、users#createを動かすためのurlとHTTPリクエストをroutesから探して（"/users",post）、上述のhtmlに変換させている。-->
+    
+      <%= render 'shared/error_messages' %>
+      <!--エラー文は、後々また使いそうなので、パーシャル化しておく。-->
+
+      <%= f.label :name %>
+      <%= f.text_field :name, class: 'form-control' %>
+      <!--htmlでは、<input name="user[name]"　となっていて、params={user: {name:...}}というデータ構造で入力情報が入る。name="name"なら、params={name: ...}。-->
+      <!--ハッシュになって、name属性が文字列でもシンボルになり、それがキーに入って、入力内容がバリューに入る。
+      バリデーションにひっかかった欄だけ色付けされるのは、ひっかかった欄にだけ、<div class="field_with_errors">で囲まれるようにしているから。-->
+
+      <%= f.label :email %>
+      <%= f.email_field :email, class: 'form-control' %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password, class: 'form-control' %>
+
+      <%= f.label :password_confirmation, "Confirmation" %>
+      <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+
+      <%= f.submit "Create my account", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>

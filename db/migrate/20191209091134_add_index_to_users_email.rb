@@ -1,5 +1,6 @@
-class AddIndexToUsersEmail < ActiveRecord::Migration[5.1]
+class AddIndexToUsersEmail < ActiveRecord::Migration[5.0]
   def change
-    add_index :users, :email, unique: true　#=> usersテーブルの、emailカラムに、indexを持たせる。オプションのunique: trueで、一意性を持たせた。
+    add_index :users, :email, unique: true
+    # => usersテーブルの、emailカラムに、indexを持たせる。オプションのunique: trueで、一意性を持たせた。
   end
 end

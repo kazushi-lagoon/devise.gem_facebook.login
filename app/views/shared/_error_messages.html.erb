@@ -1,0 +1,16 @@
+<% if @user.errors.any? %>
+  <div id="error_explanation">
+    <div class="alert alert-danger">
+      The form contains <%= pluralize(@user.errors.count, "error") %>.
+    </div>
+    <ul>
+    <% @user.errors.full_messages.each do |msg| %>
+      <!--@userの中に、errorsという場所が用意されていて、その中に失敗した理由がrubyのオブジェクトとして格納されている。
+      .full_messagesというメソッドが用意されていて、このメソッドによって、errorsの内容をユーザーに読みやすい英文（例えば、Password is too short）にして、
+      配列で返してくれる。-->
+     
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>

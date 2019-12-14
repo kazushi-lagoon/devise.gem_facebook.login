@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   # get  '/contact', to: 'static_pages#contact' この書き方で、名前付きルートの、contact_path　が追加される。
   
   get '/signup', to: 'users#new'
+  
+  resources :users
+  # rails routes で、一番左のPrefixのところは、最後に_pathを付けると、名前付きルートになる。
 
   root 'application#hello'
 

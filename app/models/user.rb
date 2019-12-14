@@ -11,8 +11,11 @@ class User < ApplicationRecord
   has_secure_password
   # 保護すべき情報はbcryptなどのハッシュ関数を使って、不可逆的にハッシュ化させた値をデータベースに保存する。こうすることで、データベース
   # をクラックされても、元の値は分からない。このアプローチはrailsに限らない。
-  # 　セキュアなパスワードの実装は、railsのメソッドであるhas_secure_passwordを使えば、簡単に完了してしまう。ただし、このメソッドを使うためには、
-  # レールを用意してあげる必要があって、それがusersに対するpassword_digestカラムの追加と、bcryptというgemのインストール。
+  # 　セキュアなパスワードの実装は、railsのメソッドであるhas_secure_passwordを使えば、簡単に完了してしまう。
+  #  「セキュアに実装する」というのは、すごく難しいことなのだが（csrf対策、データベースにはハッシュ化された値を保存するなど、セキュリティの勉強が必要）、
+  # そのレールがhas_secure_passwordですでに用意されている。
+  #  ただし、このメソッドを使うために、こちらが用意する必要のあるものがあって、それがusersに対するpassword_digestカラムの追加と、
+  # bcryptというgemのインストールである。
   # 　usersテーブルにnameカラムが存在すると、u.name="kazushi" u.save　で、nameカラムに保存できるが、has_secure_passwordでは、passwordカラムが
   # 存在しないのに、u.password="pass" ができて、u.saveとすると、password_digestカラムにbcryptでハッシュ化された値が保存される。
   

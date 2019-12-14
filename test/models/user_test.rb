@@ -60,9 +60,9 @@ class UserTest < ActiveSupport::TestCase
   # がでるだけで、どのアドレスが落ちたのか分からない。
   
   test "email addresses should be unique" do
-    duplicate_user = @user.dup　#=> .dupで、同じ属性を持つデータの複製を生成する。
+    duplicate_user = @user.dup  #=> .dupで、同じ属性を持つデータの複製を生成する。
     duplicate_user.email = @user.email.upcase
-    @user.save　#=> 一意性を持たせるテストなので、一度データベースに保存する。
+    @user.save  #=> 一意性を持たせるテストなので、一度データベースに保存する。
     assert_not duplicate_user.valid?
   end
   

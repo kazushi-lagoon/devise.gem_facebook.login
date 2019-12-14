@@ -15,8 +15,15 @@
     <!--render　の引数では、app/views以下のファイルを読み込むことになる。なので、上のコードでは、app/views/layouts/shim.html.erb　となる。-->
     <!--また、パーシャルのファイルは明示的であるようにrailsでパターン化されていて、アンダーバーから始めないとエラーが起こる。(_shim.html.erb)-->
     <div class="container">
+      <% flash.each do |message_type, message| %>
+        <div class="alert alert-<%= message_type %>"><%= message %></div>
+         <!-- => ハッシュの繰り返し処理。キーとバリューが１セットで処理される。message_typeに、キーの :success が入って、
+         クラス名が "alert-success"になり、bootstrap_cssで設けられたクラス名に該当するようになり、緑色のデザインになるというテクニック。-->
+      <% end %>
       <%= yield %>
     </div>
     <%= render 'layouts/footer' %>
+    <%= debug(params) if Rails.env.development? %>　
+    　　<!----if文を一行で書ける時は、後置if文にして、一行にして読みやすくするのが、rubyの慣例。>
   </body>
 </html>
