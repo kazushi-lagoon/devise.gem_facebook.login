@@ -1,0 +1,22 @@
+<% provide(:title, "Log in") %>
+<h1>Log in</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(:session, url: login_path) do |f| %>
+    　<!-- シンボルをform_forの引数に入れる方法で、これで、params={session: {...}}　の中に入力情報が入るようになる。urlもオプション引数で与えて、-->
+    　<!--postは、デフォルトでそうなっている。これが、モデルを持たないリソースでのform_forの実装方法。このように、引数は@userのようなオブジェクトでなくても-->
+    　<!--実装できるわけが、それだとrailsのせっかくの恩恵を無駄にしているだけ。作業工数を減らすことが、レールの本質。-->
+
+      <%= f.label :email %>
+      <%= f.email_field :email, class: 'form-control' %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password, class: 'form-control' %>
+
+      <%= f.submit "Log in", class: "btn btn-primary" %>
+    <% end %>
+
+    <p>New user? <%= link_to "Sign up now!", signup_path %></p>
+  </div>
+</div>

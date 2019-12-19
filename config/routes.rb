@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  get 'sessions/new'
+
   get 'users/new'
 
   root 'static_pages#home'
@@ -15,6 +17,11 @@ Rails.application.routes.draw do
   # get  '/contact', to: 'static_pages#contact' この書き方で、名前付きルートの、contact_path　が追加される。
   
   get '/signup', to: 'users#new'
+  
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
+  #=> resources を使わなくても、createアクションを反応させる時はpostリクエスト、という風に、restful風味にすることは可能。
   
   resources :users
   # rails routes で、一番左のPrefixのところは、最後に_pathを付けると、名前付きルートになる。

@@ -1,0 +1,6 @@
+michael:
+  name: Michael Example
+  email: michael@example.com
+  password_digest: <%= User.digest('password') %>
+  
+  # テストにはテスト用のデータベースが必要であり、それを書くための場所がfixturesである。

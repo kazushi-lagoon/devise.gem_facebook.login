@@ -26,6 +26,14 @@ class User < ApplicationRecord
   # 投げていく。validatesはいろいろなオプションが初めから用意されているパッケージ製品のようなもので、使いたいものを（今回でいうところの、presenceやlength
   # など）オプション引数として、投げていく。
   
-  
+  # 渡された文字列のハッシュ値を返す
+  def User.digest(string) #=> 書く場所は、helperでもcontrollerでも問題ないが、ユーザーに関するものなので、ここに書いた。
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost) #=> BCryptのドキュメントから、与えられた引数をハッシュ化させるコード。また、costオプションでは、
+                                                # 本来はハッシュ化させることにはコストがかかるが、テストにおけるパスワードは漏洩しても特に問題ない
+                                                # ので、本番ではちゃんとハッシュ化させて、テストでは簡易的にハッシュ化させるということをさせている。
+                                                # ?は三項演算子というもの。
+  end
   
 end

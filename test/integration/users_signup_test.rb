@@ -23,6 +23,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     end
     follow_redirect!
     assert_template 'users/show'
+    assert is_logged_in? #=> test/helper.rb で定義したメソッド。
   end
   
 end

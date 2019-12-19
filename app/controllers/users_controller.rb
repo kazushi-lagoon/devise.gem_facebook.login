@@ -38,6 +38,7 @@ class UsersController < ApplicationController
       #                                        引数を取る。引数が、"/users/:id"の、:idの部分に入る。
       # =>  redirect_to "user_path(@user)"  名前付きルートのデフォルトで、引数にオブジェクトが入ると、そのオブジェクトのidが入る。
       # =>  redirect_to @user  redirect_to のデフォルトで、"user_path(@user)"になる。
+      log_in @user
      
     else
       render 'new'
