@@ -1,4 +1,16 @@
 class User < ApplicationRecord
+  attr_accessor :remember_token
+  #=> 仮想的属性を与える。仮想的属性の生存期間は、次のリクエストが発行されるまで。コンソール上では、exit するまで。
+  # 仮想的属性は、一時的にオブジェクトに値を持たせるが、データベースには反映させない情報。今回は、この情報が消失するまでに、ユーザーのクッキーに
+  # 保存し、ハッシュ化させた値をデータベースに保存したい。
+  # password の時は、has_secure_password で自動的に実装されたが、今回は自分で実装する必要がある。
+  # 実体は、以下の二つのメソッドの実装。セッターとゲッターという。
+  # def remember_token=(token)
+  #   @remember = token
+  # end
+  # def remember_token
+  #   @remember
+  # end
   
   validates :name,  presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -34,6 +46,38 @@ class User < ApplicationRecord
                                                 # 本来はハッシュ化させることにはコストがかかるが、テストにおけるパスワードは漏洩しても特に問題ない
                                                 # ので、本番ではちゃんとハッシュ化させて、テストでは簡易的にハッシュ化させるということをさせている。
                                                 # ?は三項演算子というもの。
+  end
+  # def digest(string)ではなく、def User.digest(string) なのは、インスタンスメソッドではなく、クラスメソッドだから。インスタンスメソッドは、
+  #インスタンスに対してしか使えないので、わざわざインスタンスを生成しなくても使用できるメソッドは、全てクラスメソッドにする。クラスメソッドに
+  #してしまうと、呼び出す時にわざわざインスタンスを生成しなくてはならなくなる。
+  # ダブルコロン（::）は、rubyの世界における、ディレクトリの階層の区分け（/）のようなものとして捉えるとよい。
+  
+  # ランダムなトークンを返す
+  def User.new_token
+    SecureRandom.urlsafe_base64
+    #=> 標準gemで、デフォルトで用意されているモジュール（SecureRandom）とメソッド（urlsafe_base64）で、セキュアでランダムな文字列を生成する時によく使う。
+    # 「トークン」とは、パスワードと同様に秘密情報であるが、パスワードはユーザーが管理する情報であるのに対し、トークンはコンピューターが管理する情報
+    # である。トークンはコンピューター同士がやりとりするものなので、無作為なものでよい。
+  end
+  
+  def remember #=> remember me のチェックボックスをチェックした時に、呼び出されるメソッド。
+    self.remember_token = User.new_token #=> self を省略してしまうと、remember_token がローカル変数として評価されてしまうので、省略不可。
+                                         # update_attribute は、メソッドなので、省略可能。helper メソッドとは異なり、ここに書かれているのは全て
+                                         # インスタンスメソッドなので、self. はわざわざ書かなくてもあることが自明。
+    self.update_attribute(:remember_digest, User.digest(remember_token))
+    # update_attribute は、バリデーションをスキップさせてデータベースに保存するメソッド。ユーザーさんが何を入力するか分からない
+    # から、バリデーションをかける必要があった。今回のように、自分で発行したものを、自分で保存するケースでは、その必要がない。
+  end
+  
+  # ユーザーのログイン情報を破棄する
+  def forget
+    self.update_attribute(:remember_digest, nil)
+  end
+  
+  # 渡されたトークンがダイジェストと一致したらtrueを返す
+  def authenticated?(remember_token)
+    return false if remember_digest.nil?
+    BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
   end
   
 end

@@ -5,8 +5,24 @@ module SessionsHelper
     session[:user_id] = user.id
   end
   
+  # ユーザーのセッションを永続的にする
+  def remember(user)
+    user.remember #=> remember_token の発行と、そのハッシュ値をデータベースに保存。
+    cookies.permanent.signed[:user_id] = user.id #=> ブラウザの仕様上、cookies メソッドは、.permanentのような、期間を指定するメソッドを必要とする。
+                                                 # 面倒であれば、とりあえず.permanentで、20年間という長期の有効期間を設定しておけばよい。
+                                                 # セキュリティ上、.signed で、user_id を暗号化しておく。
+    cookies.permanent[:remember_token] = user.remember_token
+  end
+  
+  def forget(user)
+    user.forget
+    cookies.delete(:user_id)
+    cookies.delete(:remember_token)
+  end
+  # remember の対となる、逆の処理をすればよい。
+  
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id])  #=> 有効期限中は永続するセッション情報から、現在ログインしているユーザーオブジェクトを取り出す。
+    # @current_user ||= User.find_by(id: session[:user_id])  => 有効期限中は永続するセッション情報から、現在ログインしているユーザーオブジェクトを取り出す。
     #=> current_user は、link_to の引数に渡すので、view 側で使うということは、@current_user とインスタンス変数に格上げする必要がある。
     #=> セッションが切れていたら、Userモデルに該当するidが見つからず、.find_by はnil を返す。これが、.findだと、エラーになってしまう。
     #
@@ -28,6 +44,22 @@ module SessionsHelper
     #  論理和は、片方がtrueだったらもうtrue(もうそこで処理を止める)、論理積は、片方がfalseだったらもうfalse。
     #  論理値を用いて、true,false を返しているのではなく、処理（変数への代入）の場合分けを一行に省略している。
     
+    if user_id = session[:user_id] #=> user_id = session[:user_id] と、if user_id を一行で処理できる。
+      @current_user ||= User.find_by(id: user_id)
+    elsif user_id = cookies.signed[:user_id] #=> session はログイン状態に関する情報で、cookies は自動でログインするための、password に代わるものである。
+      #raise
+      user = User.find_by(id: user_id)       # elsif なので、session が切れていなければ、という意味になる。つまり、前回のログインから一度ブラウザを
+                                             # 落としていたら、という意味。
+      if user && user.authenticated?(cookies[:remember_token]) #=> params[:session][:password] に代わるもので、cookies はブラウザが永続的に保持している
+        log_in user                                            # ものなので、ここでも呼び出せる。
+        @current_user = user
+      end
+    end
+    #=> current_user は、_header.html.erb で呼び出されるので、呼び出され続ける。@current_user ||= User.find_by(id: user_id) で、パフォーマンス改善
+    # しているということは、おそらく@current_user は、次にリクエストが発行されても、消失せずに残存している。controller でインスタンス変数を生成した
+    #場合は、そのアクションで呼び出されるview のみで適用できたから分かりやすかったが、今回の場合はhelper でインスタンス変数を生成しているので、
+    #ややこしい。なので、@current_user は残存しているので、log_out メソッドでは、@current_user=nil で処理する必要がある。
+    
   end
   
   def logged_in?
@@ -36,7 +68,8 @@ module SessionsHelper
   end
   
   def log_out
-    session.delete(:user_id)
+    forget(current_user)
+    session.delete(:user_id) #=> .delete メソッドは、rails guides の、action controller から参照。
     @current_user = nil
   end
   

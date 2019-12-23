@@ -17,7 +17,10 @@
                 Account <b class="caret"></b>
               </a>
              <ul class="dropdown-menu">
-               <li><%= link_to "Profile", current_user %></li> #=> redirect_to とデフォルトが同様で、オブジェクトを渡すとuser_path になる。
+               <li><%= link_to "Profile", current_user %></li> 
+               <!--=> redirect_to とデフォルトが同様で、オブジェクトを渡すとuser_path になる。
+               helperメソッドは、viewではどこでも呼び出せる。どこに定義しているかが分かりやすいように、sessions/helper.rbで定義した。
+               controller では、リソースがcontrollerとhelperでリソースが異なる場合は、include する必要がある。-->
                <li><%= link_to "Settings", '#' %></li>
                <li class="divider"></li>
                <li>

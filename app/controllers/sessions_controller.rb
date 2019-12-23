@@ -16,7 +16,9 @@ class SessionsController < ApplicationController
       #定義されている。
       # ユーザーログイン後にユーザー情報のページにリダイレクトする
       
+    
       log_in user
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
       #=> session[:user_id]=user.id　といきなりしてもいいが、可読性を上げるために便利メソッドとして　log_in(user) を定義した。
       redirect_to user
       #=> 
@@ -29,7 +31,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    log_out if logged_in?
     redirect_to root_url
   end
 end
