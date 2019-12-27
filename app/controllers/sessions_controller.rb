@@ -18,9 +18,16 @@ class SessionsController < ApplicationController
       
     
       log_in user
-      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
       #=> session[:user_id]=user.id　といきなりしてもいいが、可読性を上げるために便利メソッドとして　log_in(user) を定義した。
-      redirect_to user
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+      #=>この行の処理は、以下の処理を、三項演算子を利用して一行にしたものである。
+        #if params[:session][:remember_me] == '1'
+        #  remember(user)
+        #else
+        #  forget(user)
+        #end
+        
+      redirect_back_or user
       #=> 
     else
       # エラーメッセージを作成する
@@ -31,7 +38,9 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out if logged_in?
+    log_out if logged_in? #=> このアプリを、同時に同じ種類の二つのブラウザで立ち上げ、片方でログアウトしてから、もう片方でログアウトしようとすると、
+                          # 二回目の方では、log_outメソッドの中の、forget(current_user)のcurrent_user がnil になってしまい、for nil:Nilclass のエラーが
+                          # 起きてしまう。if logged_in? の後置if文で、これを解決。
     redirect_to root_url
   end
 end

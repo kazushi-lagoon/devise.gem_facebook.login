@@ -21,6 +21,11 @@ module SessionsHelper
   end
   # remember の対となる、逆の処理をすればよい。
   
+  # 渡されたユーザーがログイン済みユーザーであればtrueを返す
+  def current_user?(user)
+    user == current_user
+  end
+  
   def current_user
     # @current_user ||= User.find_by(id: session[:user_id])  => 有効期限中は永続するセッション情報から、現在ログインしているユーザーオブジェクトを取り出す。
     #=> current_user は、link_to の引数に渡すので、view 側で使うということは、@current_user とインスタンス変数に格上げする必要がある。
@@ -48,6 +53,9 @@ module SessionsHelper
       @current_user ||= User.find_by(id: user_id)
     elsif user_id = cookies.signed[:user_id] #=> session はログイン状態に関する情報で、cookies は自動でログインするための、password に代わるものである。
       #raise
+      #=> raise は、問答無用で、例外を発生させるメソッドで、テストで網羅されているのか知りたい箇所に置くことで、それを知ることができる。
+      # 網羅されていれば例外が発生するので、エラーが起こるはずで、パスしてしまうと、網羅されていないということになる。
+      # しかし、これは原始的な方法で、コードのテストが何%網羅されているかチェックできるサービス（有料）が存在する。
       user = User.find_by(id: user_id)       # elsif なので、session が切れていなければ、という意味になる。つまり、前回のログインから一度ブラウザを
                                              # 落としていたら、という意味。
       if user && user.authenticated?(cookies[:remember_token]) #=> params[:session][:password] に代わるもので、cookies はブラウザが永続的に保持している
@@ -72,5 +80,24 @@ module SessionsHelper
     session.delete(:user_id) #=> .delete メソッドは、rails guides の、action controller から参照。
     @current_user = nil
   end
+  
+  # 記憶したURL (もしくはデフォルト値) にリダイレクト
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url] || default) #=> 論理和の処理で、session[:forwarding_url]　がnil だった時、default のurl へリダイレクトさせたい。
+    session.delete(:forwarding_url) #=> 消しておかないと、次回もログインすると、もプロフィールページではなく、editページへ飛んでしまう。
+  end
+
+  # アクセスしようとしたURLを覚えておく
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
+  end
+  #=> リクエストフォワーディングでは、リクエストしたurlを一時的に保存させて、適切な箇所でそこへリダイレクトさせたい。
+  # 「一時的に」なので、sessionで情報を持たせるのが適切。
+  # request は特殊な変数で、ユーザーが発行したリクエストのいろいろな情報を持つ。.original_url で、ユーザーが元々行きたかったurl になる。
+  # if request.get? で、ここでは、updateアクションのbeforeフィルターでは、この処理を行わないようにする。beforeフィルターが発動するのは、
+  # GET /users/:id/edit,  PATCH /users/:id なので、ログインしていない状態で後者のリクエストを送ると、/users/:id がsession に記憶され、
+  # それからログインすると、redirect_toメソッドによって、GET /users/:id で、showアクションになってしまうからである。それなら、
+  # フレンドリーフォワーディングに関しては（updateアクションに関しては、ログインしていない状態でのアクセスを防げていればよい）、
+  # editにのみ適用されればよいので、updateでは処理しないようにする。
   
 end

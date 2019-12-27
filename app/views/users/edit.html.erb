@@ -1,0 +1,38 @@
+<% provide(:title, "Edit user") %>
+<h1>Update your profile</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@user) do |f| %>
+      <!-- app/views/users/new.html.erb と、コードは変わらないも関わらず、new.html.erb の方では、POST /users が、edit.html.erb では、PATCH /users/:id-->
+      <!--でリクエストが送られる。なぜ同じコードなのに挙動が変わるかというと、form_for の引数の@user が、idカラムの情報を持っているかいないかで、-->
+      <!--挙動に違いを持たせているから。new.html.erb　の方では、@usesr=User.new で、空のインスタンスで、edit.html.erb では、@user=User.find(params[:id])-->
+      <!--になっている。-->
+      <!--  また、ブラウザの検証ツールでのHTMLを見てみると、edit.html.erb でも、<form...></form> のところで、method="post" で、patchリクエストになっていない。-->
+      <!--<input...></input> のところで、name="_method",value="patch" になっている。patchとdeleteは、ブラウザに標準で搭載されていないため、偽装的に、-->
+      <!--postで投げたものを、_method というparamsの属性を与えて、patchリクエストとして処理されるようにしている。patchとdeleteが、ブラウザに標準で搭載-->
+      <!--されていないのは、HTTPが設計された1970,80年代では、WEBがここまで複雑になると想定されていなかったためと思われる。-->
+      <!--patchリクエストがあるかのように偽装して、RESTfulな状態を作っている。-->
+      <%= render 'shared/error_messages' %>
+
+      <%= f.label :name %>
+      <%= f.text_field :name, class: 'form-control' %>
+
+      <%= f.label :email %>
+      <%= f.email_field :email, class: 'form-control' %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password, class: 'form-control' %>
+
+      <%= f.label :password_confirmation, "Confirmation" %>
+      <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+      <%= f.submit "Save changes", class: "btn btn-primary" %>
+    <% end %>
+
+    <div class="gravatar_edit">
+      <%= gravatar_for @user %>
+      <a href="http://gravatar.com/emails" target="_blank">change</a>
+    </div>
+  </div>
+</div>

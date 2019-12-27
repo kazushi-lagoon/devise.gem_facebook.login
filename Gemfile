@@ -2,6 +2,9 @@ source 'https://rubygems.org'
 
 gem 'rails',        '5.1.6'
 gem 'bcrypt',         '3.1.12'
+gem 'faker',          '1.7.3'
+gem 'will_paginate',           '3.1.6'
+gem 'bootstrap-will_paginate', '1.0.0' #=>'will_pagenate'の、ナビゲーションバーに、自動でデザインをかけてくれるgem
 gem 'bootstrap-sass', '3.3.7'
 # gem 'bootstrap-sass', '3.3.7'　このgemで、bootstrapの公式からダウンロードする必要はない。ただしこれは使える状態にしただけなので、importする必要がある。
 # gemを書き換える前の環境でサーバーが立ち上がったままになっているため、新しくgemを書き換えた場合、rails serverを立ち上げ直す必要がある。

@@ -1,0 +1,20 @@
+<% provide(:title, 'All users') %>
+<h1>All users</h1>
+
+<%= will_paginate %> #=> ナビゲーションバーを出したい場所に、このコードを書く。そして、controller内の、User.all をUser.pagenateに書き換えれば、
+                     # will_paginate gem で用意された、ページネーションも機能の実装は完了する。
+
+<ul class="users">
+  <%= render @users %>
+  <!--rails をよく知っている人だと、userオブジェクトのパーシャルを先に作っておいて、あとはrender @users で呼び出すだけ。-->
+  <!--render の引数に、モデルのインスタンスの集合を渡すと、その集合を展開して、インスタンスの一つずつに対して、render する。-->
+  <!--#=> render @users は、二段階目のリファクタリングで、以下の三行を意味する。-->
+  
+  <!--<% @users.each do |user| %>-->
+  <!--  <%= render user %>　render の引数には、パーシャル名を指定するだけでなく、モデルのインスタンスオブジェクトを渡すことができて、
+                            renderの、デフォルトの挙動で、app/views/リソース名/_モデル名.html.erb で、app/views/users/_user.html.erb となる。-->
+  <!--<% end %>-->
+  
+</ul>
+
+<%= will_paginate %>

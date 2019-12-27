@@ -11,7 +11,7 @@
             <li><%= link_to "Home",   root_path %></li>
             <li><%= link_to "Help",   help_path %></li>
         <% if logged_in? %>
-            <li><%= link_to "Users", '#' %></li>
+            <li><%= link_to "Users", users_path %></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 Account <b class="caret"></b>
@@ -21,7 +21,7 @@
                <!--=> redirect_to とデフォルトが同様で、オブジェクトを渡すとuser_path になる。
                helperメソッドは、viewではどこでも呼び出せる。どこに定義しているかが分かりやすいように、sessions/helper.rbで定義した。
                controller では、リソースがcontrollerとhelperでリソースが異なる場合は、include する必要がある。-->
-               <li><%= link_to "Settings", '#' %></li>
+               <li><%= link_to "Settings", edit_user_path(current_user) %></li>
                <li class="divider"></li>
                <li>
                  <%= link_to "Log out", logout_path, method: :delete %>

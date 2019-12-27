@@ -31,7 +31,8 @@ class User < ApplicationRecord
   # 　usersテーブルにnameカラムが存在すると、u.name="kazushi" u.save　で、nameカラムに保存できるが、has_secure_passwordでは、passwordカラムが
   # 存在しないのに、u.password="pass" ができて、u.saveとすると、password_digestカラムにbcryptでハッシュ化された値が保存される。
   
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  #=> allow_nilオプションによって、ユーザー情報の更新時に、わざわざまたパスワードを入力することを強制する、という状態を解決している。
                     
   # ActiveRecordの継承によって、saveやcreateなどのメソッドが使えるようになったのに加えて、validatesメソッドも使えるようになった。
   # このメソッドに対して、オプション引数（link_toメソッドで出た概念）を投げている形なので、presence:...,length:...　という形で、後ろからバンバンバンバン
@@ -76,7 +77,16 @@ class User < ApplicationRecord
   
   # 渡されたトークンがダイジェストと一致したらtrueを返す
   def authenticated?(remember_token)
-    return false if remember_digest.nil?
+    return false if remember_digest.nil? #=> 二つの異なる種類のブラウザ（ここではChromeとFirefoxとする）で、同時にこのアプリを立ち上げ、
+                                         # Chromeでログアウトしてから、一度Firefoxのブラウザを落として、もう一度Firefoxでこのアプリにアクセスすると、
+                                         # Chromeのログアウトによってremember_digest がnil になっていて、Firefoxでアクセスした時に、Firefoxでcookie
+                                         # は残っているので、このauthenticated?メソッドが発動されて、remember_digest がnil のためBCrypt で例外エラー
+                                         # が起きてしまう。BCrypt の処理では、remember_digest のところにnil が入ると、nil やfalse を返してくれるの
+                                         # ではなく、エラーを発生させてしまうのである。なので、この行の処理で、このケースのとき、false を返して
+                                         # 処理を止まらせる。return false if は便利な処理で、if文に該当する場合は、false という結果で終わらせて、
+                                         # 以降の処理は実行させない、ということができる。この種類のバグは、cookie が残っていたら、remember_digestも
+                                         # あるはずだという、誤った考えから生まれる。上でみてきたように、cookie が残っているのに、remember_digestが
+                                         # 消失している場合もあり得る。
     BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
   end
   
