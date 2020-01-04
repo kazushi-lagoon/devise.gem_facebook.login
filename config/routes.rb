@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   # rails routes で、一番左のPrefixのところは、最後に_pathを付けると、名前付きルートになる。
 
   root 'application#hello'
+  get '/privacy',  to: 'static_pages#privacy'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
