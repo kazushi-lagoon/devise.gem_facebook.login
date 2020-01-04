@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable, :omniauthable
   attr_accessor :remember_token
   #=> 仮想的属性を与える。仮想的属性の生存期間は、次のリクエストが発行されるまで。コンソール上では、exit するまで。
   # 仮想的属性は、一時的にオブジェクトに値を持たせるが、データベースには反映させない情報。今回は、この情報が消失するまでに、ユーザーのクッキーに
@@ -20,7 +24,6 @@ class User < ApplicationRecord
                     # uniquenessのデフォルトでは、大文字・小文字を区別してしまう。
   # 通常、アドレスは大文字・小文字を区別せずに送信されるので、case_sensitive: false　で、大文字・小文字を区別せずに一意性を持たせる。
   
-  has_secure_password
   # 保護すべき情報はbcryptなどのハッシュ関数を使って、不可逆的にハッシュ化させた値をデータベースに保存する。こうすることで、データベース
   # をクラックされても、元の値は分からない。このアプローチはrailsに限らない。
   # 　セキュアなパスワードの実装は、railsのメソッドであるhas_secure_passwordを使えば、簡単に完了してしまう。
@@ -88,6 +91,23 @@ class User < ApplicationRecord
                                          # あるはずだという、誤った考えから生まれる。上でみてきたように、cookie が残っているのに、remember_digestが
                                          # 消失している場合もあり得る。
     BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
+  end
+  
+  def self.find_for_oauth(auth)
+    user = User.where(uid: auth.uid, provider: auth.provider).first
+
+    unless user
+      user = User.create(
+        uid:      auth.uid,
+        provider: auth.provider,
+        email:    auth.info.email,
+        name:  auth.info.name,
+        password: Devise.friendly_token[0, 20],
+        image:  auth.info.image
+      )
+    end
+
+    user
   end
   
 end
