@@ -1,13 +1,7 @@
 Rails.application.routes.draw do
   
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' },skip: :all
-  devise_scope :user do
-  get 'users/auth/facebook' => 'users/omniauth_callbacks#passthru', as: :user_facebook_omniauth_authorize
-  post 'users/auth/facebook' => 'users/omniauth_callbacks#passthru'
-  get 'users/auth/facebook/callback' => 'users/omniauth_callbacks#facebook', as: :user_facebook_omniauth_callback
-  post 'users/auth/facebook/callback' => 'users/omniauth_callbacks#facebook'
-  delete 'logout' => 'devise/sessions#destroy', as: :destroy_user_session
-end
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
+ 
 
   get 'sessions/new'
 
