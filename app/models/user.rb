@@ -79,7 +79,7 @@ class User < ApplicationRecord
   end
   
   def authenticate(unencrypted_password)
-        BCrypt::Password.new(self.password_digest).is_password?(unencrypted_password) && self
+        BCrypt::Password.new(self.password_digest).is_password?(unencrypted_password)
   end
   
   # 渡されたトークンがダイジェストと一致したらtrueを返す
