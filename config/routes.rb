@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   
+  resources :users
+  # rails routes で、一番左のPrefixのところは、最後に_pathを付けると、名前付きルートになる。
+  
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
  
 
@@ -26,8 +29,7 @@ Rails.application.routes.draw do
   delete '/logout',  to: 'sessions#destroy'
   #=> resources を使わなくても、createアクションを反応させる時はpostリクエスト、という風に、restful風味にすることは可能。
   
-  resources :users
-  # rails routes で、一番左のPrefixのところは、最後に_pathを付けると、名前付きルートになる。
+  
 
   root 'application#hello'
   get '/privacy',  to: 'static_pages#privacy'
