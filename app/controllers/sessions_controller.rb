@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
   
   def create
     user = User.find_by(email: params[:session][:email].downcase)
-    if user && user.authenticate(params[:session][:password])
+    if user && authenticate(params[:session][:password])
       #=> user &&  の部分がないと、登録されていないemailでfind_byしたとき、user=nilとなり、authenticateで、undifined methodでエラーする。
       # nil:NilClassというエラー文は、このような、オブジェクトがniになるケースが考慮できていないときに起こる、よくあるミス。
       # 　rubyに限らず、プログラミング言語の一般的なルールとして、「評価しなくていいものは評価しない。」論理積で、左から評価して、nil,falseが出た時点で、
