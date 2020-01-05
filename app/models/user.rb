@@ -78,6 +78,10 @@ class User < ApplicationRecord
     self.update_attribute(:remember_digest, nil)
   end
   
+  def authenticate(unencrypted_password)
+        BCrypt::Password.new(self.password_digest).is_password?(unencrypted_password) && self
+  end
+  
   # 渡されたトークンがダイジェストと一致したらtrueを返す
   def authenticated?(remember_token)
     return false if remember_digest.nil? #=> 二つの異なる種類のブラウザ（ここではChromeとFirefoxとする）で、同時にこのアプリを立ち上げ、
